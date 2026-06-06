@@ -30,22 +30,24 @@ This document now reflects the latest Databricks pipeline design and presents:
 ## Star Schema ER Diagram
 ```mermaid
 flowchart TB
-    classDef fact fill:#3498db,stroke:#1f618d,stroke-width:2px,color:#fff;
-    classDef dim fill:#85c1e9,stroke:#1f618d,stroke-width:2px,color:#000;
+    subgraph top_row
+        direction LR
+        DIM_GENE["DIM_GENE\nstring gene_key PK\nstring gene_id\nstring gene_name\nstring gene_type\nstring seqname\nint start_pos\nint end_pos\nstring strand\nint length\nstring annotation_source"]
+        DIM_VARIANT["DIM_VARIANT\nstring variant_key PK\nstring chrom\nint pos\nstring variant_id\nstring ref_allele\nstring alt_allele\nstring variant_type\ndouble quality_score\nstring filter_status\nboolean is_high_quality\ntimestamp bronze_ingestion_timestamp\nstring source_file"]
+    end
 
-    DIM_GENE["DIM_GENE<br>PK gene_key<br>gene_id<br>gene_name<br>gene_type<br>seqname<br>start_pos<br>end_pos<br>strand<br>length<br>annotation_source"]
-    DIM_VARIANT["DIM_VARIANT<br>PK variant_key<br>chrom<br>pos<br>variant_id<br>ref_allele<br>alt_allele<br>variant_type<br>quality_score<br>filter_status<br>is_high_quality<br>bronze_ingestion_timestamp<br>source_file"]
-    FACT_VARIANT["FACT_VARIANT<br>PK fact_variant_key<br>FK variant_key<br>FK gene_key<br>FK clinvar_key<br>FK region_key<br>chrom<br>pos<br>variant_id<br>gene_id<br>gene_name<br>clinical_significance<br>has_gene_annotation<br>has_clinical_annotation<br>num_clinvar_evidence<br>avg_quality_score<br>processed_timestamp<br>region_name<br>sample_population"]
-    DIM_CLINVAR["DIM_CLINVAR<br>PK clinvar_key<br>allele_id<br>variation_id<br>chromosome<br>start_pos<br>gene_symbol<br>gene_id<br>clinical_significance<br>review_status<br>phenotype_list<br>pathogenicity_group"]
-    DIM_REGION["DIM_REGION<br>PK region_key<br>region_name<br>region_code<br>description<br>source_population"]
+    FACT_VARIANT["FACT_VARIANT\nstring fact_variant_key PK\nstring variant_key FK\nstring gene_key FK\nstring clinvar_key FK\nstring region_key FK\nstring chrom\nint pos\nstring variant_id\nstring gene_id\nstring gene_name\nstring clinical_significance\nboolean has_gene_annotation\nboolean has_clinical_annotation\nint num_clinvar_evidence\ndouble avg_quality_score\ntimestamp processed_timestamp\nstring region_name\nstring sample_population"]
+
+    subgraph bottom_row
+        direction LR
+        DIM_CLINVAR["DIM_CLINVAR\nstring clinvar_key PK\nint allele_id\nint variation_id\nstring chromosome\nlong start_pos\nstring gene_symbol\nint gene_id\nstring clinical_significance\nstring review_status\nstring phenotype_list\nstring pathogenicity_group"]
+        DIM_REGION["DIM_REGION\nstring region_key PK\nstring region_name\nstring region_code\nstring description\nstring source_population"]
+    end
 
     DIM_GENE --> FACT_VARIANT
     DIM_VARIANT --> FACT_VARIANT
     DIM_CLINVAR --> FACT_VARIANT
-    FACT_VARIANT --> DIM_REGION
-
-    class FACT_VARIANT fact;
-    class DIM_GENE,DIM_VARIANT,DIM_CLINVAR,DIM_REGION dim;
+    DIM_REGION --> FACT_VARIANT
 ```
 
 ---
