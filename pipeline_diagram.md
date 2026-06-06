@@ -29,17 +29,23 @@ This document now reflects the latest Databricks pipeline design and presents:
 
 ## Star Schema ER Diagram
 ```mermaid
-flowchart TB
-    DIM_GENE["DIM_GENE\nstring gene_key PK\nstring gene_id\nstring gene_name\nstring gene_type\nstring seqname\nint start_pos\nint end_pos\nstring strand\nint length\nstring annotation_source"]
-    DIM_VARIANT["DIM_VARIANT\nstring variant_key PK\nstring chrom\nint pos\nstring variant_id\nstring ref_allele\nstring alt_allele\nstring variant_type\ndouble quality_score\nstring filter_status\nboolean is_high_quality\ntimestamp bronze_ingestion_timestamp\nstring source_file"]
-    FACT_VARIANT["FACT_VARIANT\nstring fact_variant_key PK\nstring variant_key FK\nstring gene_key FK\nstring clinvar_key FK\nstring region_key FK\nstring chrom\nint pos\nstring variant_id\nstring gene_id\nstring gene_name\nstring clinical_significance\nboolean has_gene_annotation\nboolean has_clinical_annotation\nint num_clinvar_evidence\ndouble avg_quality_score\ntimestamp processed_timestamp\nstring region_name\nstring sample_population"]
-    DIM_CLINVAR["DIM_CLINVAR\nstring clinvar_key PK\nint allele_id\nint variation_id\nstring chromosome\nlong start_pos\nstring gene_symbol\nint gene_id\nstring clinical_significance\nstring review_status\nstring phenotype_list\nstring pathogenicity_group"]
-    DIM_REGION["DIM_REGION\nstring region_key PK\nstring region_name\nstring region_code\nstring description\nstring source_population"]
+graph TB
+    classDef factStyle fill:#fef3c7,stroke:#333,stroke-width:2px;
+    classDef dimStyle fill:#dbeafe,stroke:#333,stroke-width:1px;
 
-    DIM_GENE --> FACT_VARIANT
-    DIM_VARIANT --> FACT_VARIANT
-    FACT_VARIANT --> DIM_CLINVAR
-    FACT_VARIANT --> DIM_REGION
+    DIM_GENE["DIM_GENE"]
+    DIM_VARIANT["DIM_VARIANT"]
+    FACT_VARIANT["FACT_VARIANT"]
+    DIM_CLINVAR["DIM_CLINVAR"]
+    DIM_REGION["DIM_REGION"]
+
+    DIM_GENE -->|gene_key| FACT_VARIANT
+    DIM_VARIANT -->|variant_key| FACT_VARIANT
+    DIM_CLINVAR -->|clinvar_key| FACT_VARIANT
+    DIM_REGION -->|region_key| FACT_VARIANT
+
+    class FACT_VARIANT factStyle
+    class DIM_GENE,DIM_VARIANT,DIM_CLINVAR,DIM_REGION dimStyle
 ```
 
 ---
