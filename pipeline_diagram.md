@@ -51,6 +51,19 @@ erDiagram
         string sample_population
     }
 
+    dim_gene {
+        string gene_key PK
+        string gene_id
+        string gene_name
+        string gene_type
+        string seqname
+        int start_pos
+        int end_pos
+        string strand
+        int length
+        string annotation_source
+    }
+
     dim_variant {
         string variant_key PK
         string chrom
@@ -64,19 +77,6 @@ erDiagram
         boolean is_high_quality
         timestamp bronze_ingestion_timestamp
         string source_file
-    }
-
-    dim_gene {
-        string gene_key PK
-        string gene_id
-        string gene_name
-        string gene_type
-        string seqname
-        int start_pos
-        int end_pos
-        string strand
-        int length
-        string annotation_source
     }
 
     dim_clinvar_annotation {
@@ -101,8 +101,8 @@ erDiagram
         string source_population
     }
 
-    fact_variant_annotation }o--|| dim_variant : variant_key
     fact_variant_annotation }o--|| dim_gene : gene_key
+    fact_variant_annotation }o--|| dim_variant : variant_key
     fact_variant_annotation }o--|| dim_clinvar_annotation : clinvar_key
     fact_variant_annotation }o--|| dim_region : region_key
 ```
