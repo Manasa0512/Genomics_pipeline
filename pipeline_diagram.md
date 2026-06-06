@@ -30,7 +30,7 @@ This document now reflects the latest Databricks pipeline design and presents:
 ## Star Schema ER Diagram
 ```mermaid
 erDiagram
-    fact_variant_annotation {
+    FACT_VARIANT {
         string fact_variant_key PK
         string variant_key FK
         string gene_key FK
@@ -51,7 +51,7 @@ erDiagram
         string sample_population
     }
 
-    dim_gene {
+    DIM_GENE {
         string gene_key PK
         string gene_id
         string gene_name
@@ -64,7 +64,7 @@ erDiagram
         string annotation_source
     }
 
-    dim_variant {
+    DIM_VARIANT {
         string variant_key PK
         string chrom
         int pos
@@ -79,7 +79,7 @@ erDiagram
         string source_file
     }
 
-    dim_clinvar_annotation {
+    DIM_CLINVAR {
         string clinvar_key PK
         int allele_id
         int variation_id
@@ -93,7 +93,7 @@ erDiagram
         string pathogenicity_group
     }
 
-    dim_region {
+    DIM_REGION {
         string region_key PK
         string region_name
         string region_code
@@ -101,10 +101,10 @@ erDiagram
         string source_population
     }
 
-    fact_variant_annotation }o--|| dim_gene : gene_key
-    fact_variant_annotation }o--|| dim_variant : variant_key
-    fact_variant_annotation }o--|| dim_clinvar_annotation : clinvar_key
-    fact_variant_annotation }o--|| dim_region : region_key
+    FACT_VARIANT }o--|| DIM_GENE : gene_key
+    FACT_VARIANT }o--|| DIM_VARIANT : variant_key
+    FACT_VARIANT }o--|| DIM_CLINVAR : clinvar_key
+    FACT_VARIANT }o--|| DIM_REGION : region_key
 ```
 
 ---
