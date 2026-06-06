@@ -25,6 +25,87 @@ This document now reflects the latest Databricks pipeline design and presents:
 - Gold layer separates dimensions from facts for analytics-ready modeling.
 - The main fact table is `fact_variant_annotation`, supported by `dim_variant`, `dim_gene`, `dim_clinvar_annotation`, and `dim_region`.
 - The ER model is implemented as a star schema: one central fact table joined directly to dimensional tables.
+- Normalized relationships are intentionally simplified in the Gold layer so analytics queries can join the fact table directly to each dimension.
+
+## Star Schema ER Diagram
+```mermaid
+erDiagram
+    fact_variant_annotation {
+        string fact_variant_key PK
+        string variant_key FK
+        string gene_key FK
+        string clinvar_key FK
+        string region_key FK
+        string chrom
+        int pos
+        string variant_id
+        string gene_id
+        string gene_name
+        string clinical_significance
+        boolean has_gene_annotation
+        boolean has_clinical_annotation
+        int num_clinvar_evidence
+        double avg_quality_score
+        timestamp processed_timestamp
+        string region_name
+        string sample_population
+    }
+
+    dim_variant {
+        string variant_key PK
+        string chrom
+        int pos
+        string variant_id
+        string ref_allele
+        string alt_allele
+        string variant_type
+        double quality_score
+        string filter_status
+        boolean is_high_quality
+        timestamp bronze_ingestion_timestamp
+        string source_file
+    }
+
+    dim_gene {
+        string gene_key PK
+        string gene_id
+        string gene_name
+        string gene_type
+        string seqname
+        int start_pos
+        int end_pos
+        string strand
+        int length
+        string annotation_source
+    }
+
+    dim_clinvar_annotation {
+        string clinvar_key PK
+        int allele_id
+        int variation_id
+        string chromosome
+        long start_pos
+        string gene_symbol
+        int gene_id
+        string clinical_significance
+        string review_status
+        string phenotype_list
+        string pathogenicity_group
+    }
+
+    dim_region {
+        string region_key PK
+        string region_name
+        string region_code
+        string description
+        string source_population
+    }
+
+    fact_variant_annotation }o--|| dim_variant : variant_key
+    fact_variant_annotation }o--|| dim_gene : gene_key
+    fact_variant_annotation }o--|| dim_clinvar_annotation : clinvar_key
+    fact_variant_annotation }o--|| dim_region : region_key
+```
 
 ---
 
